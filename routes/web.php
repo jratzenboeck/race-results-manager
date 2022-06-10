@@ -16,3 +16,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/triathlon-races', [\App\Http\Controllers\TriathlonRaceController::class, 'store']);

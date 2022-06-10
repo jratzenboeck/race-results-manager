@@ -18,7 +18,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('location');
             $table->timestamp('date');
+            $table->unsignedBigInteger('author_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('author_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 
