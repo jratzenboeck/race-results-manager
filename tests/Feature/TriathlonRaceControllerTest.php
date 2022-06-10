@@ -36,3 +36,14 @@ it('stores a triathlon race', function () {
     ]);
 });
 
+it('fails to store a triathlon race because of missing name')
+    ->post('/triathlon-races', [
+        'location' => 'Linz',
+        'date' => Carbon::create(2022, 5, 28),
+        'type' => 'Mitteldistanz',
+        'swim_distance_in_m' => 1900,
+        'bike_distance_in_km' => 82,
+        'run_distance_in_km' => 21,
+        'swim_venue_type' => 'See'
+    ])->assertSessionHasErrors('name');
+
