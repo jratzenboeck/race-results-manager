@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TriathlonRaceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,11 +15,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
+
+
+Route::get('/races/create', [\App\Http\Controllers\RaceController::class, 'create'])
+    ->middleware(['auth'])
+    ->name('races.create');
+Route::post('/triathlon-races', [TriathlonRaceController::class, 'store']);
 
 require __DIR__.'/auth.php';
