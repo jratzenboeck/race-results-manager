@@ -19,9 +19,8 @@ Route::get('/', function () {
 })->middleware(['auth'])->name('dashboard');
 
 
-Route::get('/races/create', [\App\Http\Controllers\RaceController::class, 'create'])
+Route::get('/races/create', fn () => view('races.create'))
     ->middleware(['auth'])
     ->name('races.create');
-Route::post('/triathlon-races', [TriathlonRaceController::class, 'store']);
 
 require __DIR__.'/auth.php';

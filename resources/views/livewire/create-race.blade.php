@@ -5,16 +5,19 @@
         <div>
             <x-label for="name" :value="__('Name')"/>
             <x-input wire:model="name" id="name" class="block mt-1 w-full" type="text" name="name" required maxlength="255"/>
+            @error('name') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div class="mt-2">
             <x-label for="location" :value="__('Ort')" />
             <x-input wire:model="location" id="location" class="block mt-1 w-full" type="text" name="location" required maxlength="255"/>
+            @error('location') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div class="mt-2">
             <x-label for="date" :value="__('Datum')" />
             <x-input wire:model="date" type="date" id="date" name="date" class="block mt-1 w-full" required />
+            @error('date') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div class="mt-2">
@@ -24,6 +27,7 @@
                 <option value="bike">{{ __('Radrennen') }}</option>
                 <option value="run">{{ __('Lauf') }}</option>
             </select>
+            @error('sport_type') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
     </section>
 
@@ -40,29 +44,34 @@
                 <option value="Mitteldistanz">{{ __('Mitteldistanz') }}</option>
                 <option value="Langdistanz">{{ __('Langdistanz') }}</option>
             </select>
+            @error('type') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div x-show="$wire.sport_type == 'bike' || $wire.sport_type == 'run'" class="mt-2">
             <x-label for="bike_or_run_race_type" :value="__('Art des Wettkampfs')"/>
             <x-input wire:model="type" id="bike_or_run_race_type" class="block mt-1 w-full" type="text" name="type"/>
+            @error('type') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div x-show="$wire.sport_type == 'triathlon'" class="mt-2">
             <x-label for="swim_distance_in_m" :value="__('Schwimmstrecke in Meter')"/>
             <x-input wire:model="swim_distance_in_m" id="swim_distance_in_m" class="block mt-1 w-full" type="number"
                      name="swim_distance_in_m"/>
+            @error('swim_distance_in_m') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div class="mt-2" x-show="$wire.sport_type == 'triathlon' || $wire.sport_type == 'bike'">
             <x-label for="bike_distance_in_km" :value="__('Radstrecke in Kilometer')"/>
             <x-input wire:model="bike_distance_in_km" id="bike_distance_in_km" class="block mt-1 w-full" type="number"
                      name="bike_distance_in_km"/>
+            @error('bike_distance_in_km') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div class="mt-2" x-show="$wire.sport_type == 'triathlon' || $wire.sport_type == 'run'">
             <x-label for="run_distance_in_km" :value="__('Laufstrecke in Kilometer')"/>
             <x-input wire:model="run_distance_in_km" id="run_distance_in_km" class="block mt-1 w-full" type="number"
                      name="run_distance_in_km"/>
+            @error('run_distance_in_km') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div class="mt-2" x-show="$wire.sport_type == 'triathlon'">
@@ -72,18 +81,20 @@
                 <option value="Meer">{{ __('Meer') }}</option>
                 <option value="Fluss">{{ __('Fluss') }}</option>
             </select>
+            @error('swim_venue_type') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div class="mt-2" x-show="$wire.sport_type == 'triathlon' || $wire.sport_type == 'bike'">
-            <x-label for="bike_course_elevation" :value="__('Höhenmeter der Radstrecke')"/>
-            <x-input wire:model="bike_course_elevation" id="bike_course_elevation" class="block mt-1 w-full"
-                     type="number" name="bike_course_elevation"/>
+            <x-label for="bike_course_elevation_in_m" :value="__('Höhenmeter der Radstrecke')"/>
+            <x-input wire:model="bike_course_elevation_in_m" id="bike_course_elevation_in_m" class="block mt-1 w-full"
+                     type="number" />
+            @error('bike_course_elevation_in_m') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div class="mt-2" x-show="$wire.sport_type == 'triathlon' || $wire.sport_type == 'run'">
             <x-label for="run_course_elevation" :value="__('Höhenmeter der Laufstrecke')"/>
-            <x-input wire:model="run_course_elevation" id="run_course_elevation" class="block mt-1 w-full" type="number"
-                     name="run_course_elevation"/>
+            <x-input wire:model="run_course_elevation_in_m" id="run_course_elevation_in_m" class="block mt-1 w-full" type="number"/>
+            @error('run_course_elevation_in_m') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <button class="mt-2" type="submit">{{ __('Speichern') }}</button>
