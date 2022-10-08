@@ -17,7 +17,9 @@ class RunRaceFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'type' => 'Marathon',
+            'distance_in_km' => 42.2,
+            'elevation_in_m' => 100
         ];
     }
 }

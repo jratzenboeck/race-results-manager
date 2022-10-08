@@ -55,21 +55,21 @@
 
         <div x-show="$wire.sport_type == 'triathlon'" class="mt-2">
             <x-label for="swim_distance_in_m" :value="__('Schwimmstrecke in Meter')"/>
-            <x-input wire:model="swim_distance_in_m" id="swim_distance_in_m" class="block mt-1 w-full" type="number"
+            <x-input wire:model="swim_distance_in_m" id="swim_distance_in_m" class="block mt-1 w-full" type="number" step="0.01"
                      name="swim_distance_in_m"/>
             @error('swim_distance_in_m') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div class="mt-2" x-show="$wire.sport_type == 'triathlon' || $wire.sport_type == 'bike'">
             <x-label for="bike_distance_in_km" :value="__('Radstrecke in Kilometer')"/>
-            <x-input wire:model="bike_distance_in_km" id="bike_distance_in_km" class="block mt-1 w-full" type="number"
+            <x-input wire:model="bike_distance_in_km" id="bike_distance_in_km" class="block mt-1 w-full" type="number" step="0.01"
                      name="bike_distance_in_km"/>
             @error('bike_distance_in_km') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>
 
         <div class="mt-2" x-show="$wire.sport_type == 'triathlon' || $wire.sport_type == 'run'">
             <x-label for="run_distance_in_km" :value="__('Laufstrecke in Kilometer')"/>
-            <x-input wire:model="run_distance_in_km" id="run_distance_in_km" class="block mt-1 w-full" type="number"
+            <x-input wire:model="run_distance_in_km" id="run_distance_in_km" class="block mt-1 w-full" type="number" step="0.01"
                      name="run_distance_in_km"/>
             @error('run_distance_in_km') <span class="text-red-600">{{ $message }}</span> @enderror
         </div>

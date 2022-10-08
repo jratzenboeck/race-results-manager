@@ -17,7 +17,14 @@ class RaceResultFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'age_group' => 'M30-35',
+            'participants_total' => 2000,
+            'participants_gender' => 1500,
+            'participants_age_group' => 200,
+            'rank_total' => 1,
+            'rank_gender' => 1,
+            'rank_age_group' => 1,
+            'total_time' => '10:00:00'
         ];
     }
 }

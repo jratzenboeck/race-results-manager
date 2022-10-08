@@ -17,7 +17,9 @@ class BikeRaceFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'type' => 'Radmarathon',
+            'distance_in_km' => 140,
+            'elevation_in_m' => 1400
         ];
     }
 }
