@@ -2,11 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\BikeRace;
 use App\Models\RaceResult;
-use App\Models\RunRace;
-use App\Models\TriathlonRace;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
