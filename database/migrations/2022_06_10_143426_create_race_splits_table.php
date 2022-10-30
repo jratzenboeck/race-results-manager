@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      *
@@ -16,8 +15,9 @@ return new class extends Migration
         Schema::create('race_splits', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('race_results_id');
-            $table->enum('type', ['Swim', 'Bike', 'Run']);
-            $table->float('distance_in_km');
+            $table->string('type', 100);
+            $table->float('distance')->nullable();
+            $table->string('distance_unit', 50)->nullable();
             $table->time('time');
             $table->integer('rank_total');
             $table->integer('rank_gender');

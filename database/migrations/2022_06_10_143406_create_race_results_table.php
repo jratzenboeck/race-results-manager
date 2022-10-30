@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      *
@@ -18,13 +17,13 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('raceable_id');
             $table->string('raceable_type');
-            $table->string('age_group');
+            $table->string('age_group')->nullable();
             $table->integer('participants_total');
-            $table->integer('participants_gender');
-            $table->integer('participants_age_group');
+            $table->integer('participants_gender')->nullable();
+            $table->integer('participants_age_group')->nullable();
             $table->integer('rank_total');
-            $table->integer('rank_gender');
-            $table->integer('rank_age_group');
+            $table->integer('rank_gender')->nullable();
+            $table->integer('rank_age_group')->nullable();
             $table->time('total_time');
             $table->text('notes')->nullable();
             $table->timestamps();
