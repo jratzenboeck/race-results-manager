@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Services\PentekTimingProvider;
+use App\Services\RaceResultsProvider;
 use Illuminate\Support\ServiceProvider;
+use InvalidArgumentException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +16,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(RaceResultsProvider::class, function ($app, $params) {
+            if ($params['provider'] == 'pentek') {
+                return new PentekTimingProvider();
+            } else {
+                throw new InvalidArgumentException('Race results provider ' . $params['provider'] . ' not available');
+            }
+        });
     }
 
     /**
