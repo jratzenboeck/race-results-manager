@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Facades\PentekTimingGateway;
 use App\Helpers\RaceResultDetails;
 use App\Models\Gender;
 use App\Models\Race;

@@ -44,20 +44,21 @@ class FetchRaceResults extends Command
                     Extract splits and save each split
                     break
         */
-        $races = Race::whereNotExists(fn ($query) => $query->select(DB::raw(1))->from('race_results')->whereColumn('race_results.raceable_id', 'races.id'))->where('date', '<', now()->startOfDay())->get();
+        $races = Race::whereNotExists(
+            fn ($query) => $query
+                ->select(DB::raw(1))
+                ->from('race_results')
+                ->whereColumn('race_results.raceable_id', 'races.id')
+        )->where('date', '<', now()->startOfDay())->get();
 
         foreach ($races as $race) {
             foreach (self::RACE_RESULTS_PROVIDERS as $provider) {
-                try {
-                    $concreteProvider = resolve(RaceResultsProvider::class, compact('provider'));
-                    $raceResultDetails = $concreteProvider->fetchResultFor($race, User::findOrFail($race->author_id));
-                    $raceResultDetails->raceResult->save();
-                    collect($raceResultDetails->raceSplits)->each(function ($raceSplit) {
-                        $raceSplit->save();
-                    });
-                } catch (Throwable $throwable) {
-                    // Try with next provider
-                }
+                $concreteProvider = resolve(RaceResultsProvider::class, compact('provider'));
+                $raceResultDetails = $concreteProvider->fetchResultFor($race, User::findOrFail($race->author_id));
+                $raceResultDetails->raceResult->save();
+                collect($raceResultDetails->raceSplits)->each(function ($raceSplit) {
+                    $raceSplit->save();
+                });
             }
         }
         return Command::SUCCESS;

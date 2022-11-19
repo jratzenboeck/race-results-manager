@@ -7,12 +7,9 @@ use App\Models\TriathlonRace;
 use App\Models\User;
 use Carbon\Carbon;
 
-use function Pest\Laravel\actingAs;
-
 it('fetches a race result from Pentek Timing', function () {
     // Create a user with my credentials and act as this user
     $user = User::factory(['name' => 'Jürgen Ratzenböck'])->create();
-    actingAs($user);
     // Create a triathlon race (Linz Triathlon with timestamp being in May 2022)
     $triRace = TriathlonRace::factory()
         ->for(Race::factory()
@@ -82,4 +79,37 @@ it('fetches a race result from Pentek Timing', function () {
         'rank_gender' => 48,
         'rank_age_group' => 15
     ]);
+});
+
+it('cannot fetch race results because race already has a result', function () {
+    // Create a user with my credentials and act as this user
+    $user = User::factory(['name' => 'Jürgen Ratzenböck'])->create();
+    // Create a triathlon race (Linz Triathlon with timestamp being in May 2022)
+    $triRace = TriathlonRace::factory()
+        ->for(Race::factory()
+            ->for($user, 'author')
+            ->create([
+                'name' => 'Linz Triathlon',
+                'date' => Carbon::create(2022, 5, 28, 12),
+            ]))->create();
+    RaceResult::factory()->for($triRace, 'raceable')->for($user)->create();
+    // Execute artisan command to fetch race results
+    $this->artisan('fetch:race-results');
+
+    $this->assertDatabaseCount('race_results', 1);
+});
+
+it('cannot fetch race result because race does not exist at given provider', function () {
+    // Create a triathlon race (Linz Triathlon with timestamp being in May 2022)
+    TriathlonRace::factory()
+        ->for(Race::factory()
+            ->for(User::factory(['name' => 'Jürgen Ratzenböck'])->create(), 'author')
+            ->create([
+                'name' => 'Linz Marathon',
+                'date' => Carbon::create(2022, 5, 28, 12),
+            ]))->create();
+
+    $this->expectExceptionMessage('Pentek timing project could not be found for race name Linz Marathon');
+
+    $this->artisan('fetch:race-results');
 });

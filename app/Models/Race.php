@@ -9,6 +9,10 @@ class Race extends BaseModel
 {
     use HasFactory;
 
+    protected $casts = [
+        'date' => 'datetime'
+    ];
+
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class);
