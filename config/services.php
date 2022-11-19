@@ -32,6 +32,6 @@ return [
     ],
 
     'pentek_timing' => [
-        'url' => 'https://www.pentek-timing.at/ws-results/rs/'
+        'url' => 'https://www.pentek-timing.at/ws-results/rs'
     ]
 ];

@@ -29,13 +29,33 @@ class PentekTimingGateway
         return $response->json('Competitions');
     }
 
+    public function results(int $projectNumber, int $competitionNumber, int $from = 0, int $to = 50): array
+    {
+        $response = $this->get(
+            'Results',
+            'pnr=' . $projectNumber . '&cnr=' . $competitionNumber . '&from=' . $from . '&to=' . $to
+        );
+
+        return $response->json('Results');
+    }
+
+    public function detailResults(int $projectNumber, int $competitionNumber, int $bibNumber): array
+    {
+        $response = $this->get(
+            'DetailResults',
+            'pnr=' . $projectNumber . '&cnr=' . $competitionNumber . '&bib=' . $bibNumber
+        );
+
+        return $response->json('DetailResults');
+    }
+
     /**
      * @throws RequestException
      */
     private function get(string $resourceType, string $queryString)
     {
         $response = Http::get(
-            config('services.pentek_timing.url') . '/get ' . $resourceType . '?' . $queryString
+            config('services.pentek_timing.url') . '/get' . $resourceType . '?' . $queryString
         );
         return $response->throwIf($response->failed());
     }

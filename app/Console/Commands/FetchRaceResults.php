@@ -3,8 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Race;
-use App\Models\RaceResult;
-use App\Models\RaceSplit;
 use App\Models\User;
 use App\Services\RaceResultsProvider;
 use Illuminate\Console\Command;
@@ -52,11 +50,9 @@ class FetchRaceResults extends Command
             foreach (self::RACE_RESULTS_PROVIDERS as $provider) {
                 try {
                     $concreteProvider = resolve(RaceResultsProvider::class, compact('provider'));
-                    $result = $concreteProvider->fetchResultFor($race, User::findOrFail($race->author_id));
-                    $raceResult = RaceResult::from($result['total']);
-                    $raceResult->save();
-                    collect($result['splits'])->each(function ($split) {
-                        $raceSplit = RaceSplit::from($split);
+                    $raceResultDetails = $concreteProvider->fetchResultFor($race, User::findOrFail($race->author_id));
+                    $raceResultDetails->raceResult->save();
+                    collect($raceResultDetails->raceSplits)->each(function ($raceSplit) {
                         $raceSplit->save();
                     });
                 } catch (Throwable $throwable) {

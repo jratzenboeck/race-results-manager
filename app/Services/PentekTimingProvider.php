@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Helpers\RaceResultDetails;
 use App\Models\Gender;
 use App\Models\Race;
 use App\Models\RaceResult;
 use App\Models\RaceSplit;
+use App\Models\RaceSplitType;
 use App\Models\User;
 use Arr;
 use Exception;
@@ -17,7 +19,7 @@ class PentekTimingProvider implements RaceResultsProvider
     /**
      * @throws RequestException
      */
-    public function fetchResultFor(Race $race, User $user): array
+    public function fetchResultFor(Race $race, User $user): RaceResultDetails
     {
         $project = $this->getProject($race);
         $competition = $this->getCompetition($project['pnr'], $race);
@@ -33,12 +35,13 @@ class PentekTimingProvider implements RaceResultsProvider
             'rank_age_group' => $resultOfUser['catrank'],
             'total_time' => $resultOfUser['time']
         ]);
-        $splitTimes = $this->getDetailResult($project['pnr'], $competition['cnr'], $resultOfUser['bibNumber']);
+        $detailResult = $this->getDetailResult($project['pnr'], $competition['cnr'], $resultOfUser['bibNumber']);
+        $splitResults = $this->computeSplitsFrom($detailResult);
 
-        $raceResult = RaceResult::fromProvider($resultData, 'pentek');
-        $raceSplits = RaceSplit::fromProvider($splitTimes, 'pentek');
+        $raceResult = RaceResult::from($resultData);
+        $raceSplits = RaceSplit::from($splitResults, $raceResult);
 
-        return compact('raceResult', 'raceSplits');
+        return new RaceResultDetails($raceResult, $raceSplits);
     }
 
     private function numberOfParticipantsForGender(array $competition, Gender $gender)
@@ -68,9 +71,9 @@ class PentekTimingProvider implements RaceResultsProvider
     /**
      * @throws RequestException
      */
-    private function getCompetition(int $pnr, Race $race): array
+    private function getCompetition(int $projectNumber, Race $race): array
     {
-        $competitions = PentekTimingGateway::competitions($pnr);
+        $competitions = PentekTimingGateway::competitions($projectNumber);
 
         return Arr::first(
             $competitions,
@@ -79,13 +82,108 @@ class PentekTimingProvider implements RaceResultsProvider
         );
     }
 
-    private function getResult(int $pnr, int $cnr, User $user): array
+    /**
+     * @throws Exception
+     */
+    private function getResult(int $projectNumber, int $competitionNumber, User $user): array
     {
-        return [];
+        $from = 0;
+        $count = 50;
+        $to = $count;
+
+        do {
+            $results = PentekTimingGateway::results($projectNumber, $competitionNumber, $from, $to);
+            $athlete = $this->getAthlete($results, $user);
+
+            $from = $to + 1;
+            $to += $count;
+        } while ($athlete == null && count($results) == 50);
+
+        if ($athlete == null) {
+            throw new Exception('Pentek timing athlete ' . $user->name .
+                ' could not be found for project number ' . $projectNumber .
+                ' and competition number ' . $competitionNumber);
+        }
+        return $athlete;
     }
 
-    private function getDetailResult(int $pnr, int $cnr, int $bibNumber): array
+    private function getDetailResult(int $projectNumber, int $competitionNumber, int $bibNumber): array
     {
-        return [];
+        $detailResults = PentekTimingGateway::detailResults($projectNumber, $competitionNumber, $bibNumber);
+        $detailResult = Arr::first(
+            $detailResults,
+            null,
+            fn () => throw new Exception('Pentek timing detail results empty')
+        );
+
+        return $detailResult['DetailResultRows'];
+    }
+
+    private function getAthlete(array $results, User $user): ?array
+    {
+        $participants = collect($results)->map(fn ($result) => Arr::first($result['Participants']));
+
+        return $participants?->first(
+            fn ($participant) => $participant['firstname'] == $user->first_name &&
+                $participant['lastname'] == $user->last_name
+        );
+    }
+
+    private function computeSplitsFrom(array $detailResultRows): array
+    {
+        return array_filter(array_map(function ($resultRow) {
+            $type = $this->splitType($resultRow['description']);
+            if ($type != null) {
+                $distanceUnit = $this->distanceUnitBasedOnType($type);
+                $distance = $this->distance($resultRow['distance'], $distanceUnit);
+                $time = $this->time($resultRow['timevalue']);
+
+                return array_merge(
+                    compact('type', 'distanceUnit', 'distance', 'time'),
+                    [
+                        'rank_total' => $resultRow['rank'],
+                        'rank_gender' => $resultRow['genderrank'],
+                        'rank_age_group' => $resultRow['catrank']
+                    ]
+                );
+            }
+            return null;
+        }, $detailResultRows));
+    }
+
+    private function splitType(string $description): ?RaceSplitType
+    {
+        if (Str::contains($description, 'Swim')) {
+            return RaceSplitType::SWIM;
+        }
+        return match ($description) {
+            'Trans1' => RaceSplitType::TRANSITION1,
+            'BikeFinish' => RaceSplitType::BIKE,
+            'Trans2' => RaceSplitType::TRANSITION2,
+            'Finish' => RaceSplitType::RUN,
+            default => null
+        };
+    }
+
+    private function distanceUnitBasedOnType(RaceSplitType $type): ?string
+    {
+        return match ($type) {
+            RaceSplitType::SWIM => 'Meter',
+            RaceSplitType::BIKE, RaceSplitType::RUN => 'Kilometer',
+            default => null
+        };
+    }
+
+    private function distance(int $distance, string $distanceUnit): float
+    {
+        return match ($distanceUnit) {
+            'Meter' => round((float)$distance / 100, 2),
+            'Kilometer' => round((float)$distance / 1000 * 100, 2)
+        };
+    }
+
+    private function time(int $timeValue): string
+    {
+        return date('H:i:s', $timeValue / 1000);
     }
 }
