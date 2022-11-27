@@ -15,8 +15,6 @@ return new class () extends Migration {
         Schema::create('race_results', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('raceable_id');
-            $table->string('raceable_type');
             $table->string('age_group')->nullable();
             $table->integer('participants_total');
             $table->integer('participants_gender')->nullable();
@@ -26,10 +24,10 @@ return new class () extends Migration {
             $table->integer('rank_age_group')->nullable();
             $table->time('total_time');
             $table->text('notes')->nullable();
+            $table->morphs('raceable');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->foreign('raceable_id')->references('id')->on('races')->cascadeOnDelete();
         });
     }
 

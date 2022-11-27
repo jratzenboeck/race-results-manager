@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -27,6 +28,26 @@ class PentekTimingGateway
         $response = $this->get('Competitions', 'pnr=' . $projectNumber);
 
         return $response->json('Competitions');
+    }
+
+    /**
+     * @param int $projectNumber
+     * @param int $competitionNumber
+     * @return array
+     * @throws RequestException
+     * @throws Exception
+     */
+    public function competition(int $projectNumber, int $competitionNumber): array
+    {
+        $response = $this->get('Competitions', 'pnr=' . $projectNumber . '&cnr=' . $competitionNumber);
+
+        $competitions = $response->json('Competitions');
+
+        if ($competitions == null || count($competitions) !== 1) {
+            throw new Exception('Competition with number ' . $competitionNumber . ' does not exist for project ' . $projectNumber);
+        }
+
+        return $competitions[0];
     }
 
     public function results(int $projectNumber, int $competitionNumber, int $from = 0, int $to = 50): array

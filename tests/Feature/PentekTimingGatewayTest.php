@@ -44,6 +44,23 @@ it('should return an empty array if no competitions could be found for given pro
     $this->assertEmpty($competitions);
 });
 
+it('should return details of competition for given project and competition number', function () {
+    $competition = PentekTimingGateway::competition(14216, 1);
+
+    $this->assertEquals([
+        'competitor_count_total' => 202,
+        'competitor_count_male' => 170,
+        'competitor_count_female' => 32
+    ], Arr::only($competition, ['competitor_count_total', 'competitor_count_male', 'competitor_count_female']));
+});
+
+it('throws exception if competition does not exist for given project and competition number')
+    ->tap(fn () => PentekTimingGateway::competition(14216, 199))
+    ->throws(
+        Exception::class,
+        'Competition with number 199 does not exist for project 14216'
+    );
+
 it('should return results for given project and competition', function () {
     $results = PentekTimingGateway::results(14216, 1);
 

@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Livewire\CreateRace;
-use App\Models\Race;
+use App\Models\TriathlonRace;
 use App\Models\User;
 use Carbon\Carbon;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;
 
@@ -26,23 +27,24 @@ it('stores a triathlon race', function () {
         ->assertSessionHas('successMessage')
         ->assertRedirect('/');
 
-    $this->assertDatabaseHas('races', [
-        'name' => 'Linz Triathlon 2022',
-        'location' => 'Linz',
-        'date' => Carbon::create(2022, 5, 28),
-        'author_id' => $user->id
-    ]);
     $this->assertDatabaseHas('triathlon_races', [
-        'race_id' => Race::first()->id,
         'type' => 'Mitteldistanz',
         'swim_distance_in_m' => 1900,
         'bike_distance_in_km' => 82,
         'run_distance_in_km' => 21,
         'swim_venue_type' => 'See'
     ]);
+    $this->assertDatabaseHas('races', [
+        'name' => 'Linz Triathlon 2022',
+        'location' => 'Linz',
+        'date' => Carbon::create(2022, 5, 28),
+        'author_id' => $user->id,
+        'raceable_id' => TriathlonRace::first()->id,
+        'raceable_type' => TriathlonRace::class
+    ]);
 });
 
-it('fails to store a triathlon race because of missing name', function() {
+it('fails to store a triathlon race because of missing name', function () {
     $user = User::factory()->create();
 
     actingAs($user);

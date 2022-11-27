@@ -14,7 +14,7 @@ return new class () extends Migration {
     {
         Schema::create('race_splits', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('race_results_id');
+            $table->unsignedBigInteger('race_result_id');
             $table->string('type', 100);
             $table->float('distance')->nullable();
             $table->string('distance_unit', 50)->nullable();
@@ -25,7 +25,7 @@ return new class () extends Migration {
             $table->timestamps();
 
             $table
-                ->foreign('race_results_id')
+                ->foreign('race_result_id')
                 ->references('id')
                 ->on('race_results')
                 ->cascadeOnDelete();

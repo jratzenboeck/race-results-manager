@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -52,17 +51,13 @@ class User extends Authenticatable
         return $this->hasMany(RaceResult::class);
     }
 
-    protected function firstName()
+    public function firstName(): string
     {
-        return Attribute::make(
-            get: fn ($value) => explode(' ', $value)[0]
-        );
+        return explode(' ', $this->name)[0];
     }
 
-    protected function lastname()
+    public function lastName(): string
     {
-        return Attribute::make(
-            get: fn ($value) => explode(' ', $value)[1]
-        );
+        return explode(' ', $this->name)[1];
     }
 }

@@ -66,11 +66,10 @@ class CreateRace extends Component
 
         $race = new Race(['name' => $this->name, 'location' => $this->location, 'date' => $this->date]);
         $race->author()->associate(Auth::user());
-        $race->save();
 
         $concreteRace = $this->buildConcreteRace();
-        $concreteRace->race()->associate($race);
         $concreteRace->save();
+        $concreteRace->raceable()->save($race);
 
         session()->flash('successMessage', 'Der Wettkampf wurde erfolgreich gespeichert');
 
@@ -102,7 +101,8 @@ class CreateRace extends Component
                     'distance_in_km' => $this->run_distance_in_km,
                     'elevation_in_m' => $this->run_course_elevation_in_m
                 ]);
-            default: abort(404, 'Ungültige Sportart: ' . $this->sport_type);
+            default:
+                abort(404, 'Ungültige Sportart: ' . $this->sport_type);
         }
     }
 }

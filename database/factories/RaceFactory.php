@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Race;
+use App\Models\TriathlonRace;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +20,9 @@ class RaceFactory extends Factory
         return [
             'name' => $this->faker->sentence,
             'location' => $this->faker->city,
-            'date' => now()
+            'date' => now(),
+            'raceable_id' => TriathlonRace::factory()->create(),
+            'raceable_type' => TriathlonRace::class
         ];
     }
 }

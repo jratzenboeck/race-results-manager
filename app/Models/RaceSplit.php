@@ -17,4 +17,11 @@ class RaceSplit extends BaseModel
     {
         return $this->belongsTo(RaceResult::class);
     }
+
+    public static function from(array $splitResults)
+    {
+        return collect($splitResults)->map(function ($splitResult) {
+            return new RaceSplit($splitResult);
+        });
+    }
 }

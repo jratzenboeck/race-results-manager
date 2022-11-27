@@ -3,11 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Models\Race;
+use App\Models\RaceSplit;
 use App\Models\User;
 use App\Services\RaceResultsProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class FetchRaceResults extends Command
 {
@@ -56,7 +56,9 @@ class FetchRaceResults extends Command
                 $concreteProvider = resolve(RaceResultsProvider::class, compact('provider'));
                 $raceResultDetails = $concreteProvider->fetchResultFor($race, User::findOrFail($race->author_id));
                 $raceResultDetails->raceResult->save();
-                collect($raceResultDetails->raceSplits)->each(function ($raceSplit) {
+                $raceResult = $raceResultDetails->raceResult->fresh();
+                collect($raceResultDetails->raceSplits)->each(function (RaceSplit $raceSplit) use ($raceResult) {
+                    $raceSplit->raceResult()->associate($raceResult);
                     $raceSplit->save();
                 });
             }
