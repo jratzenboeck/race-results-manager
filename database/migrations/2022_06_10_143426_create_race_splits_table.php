@@ -18,7 +18,7 @@ return new class () extends Migration {
             $table->string('type', 100);
             $table->float('distance')->nullable();
             $table->string('distance_unit', 50)->nullable();
-            $table->time('time');
+            $table->string('time', 8);
             $table->integer('rank_total');
             $table->integer('rank_gender');
             $table->integer('rank_age_group');

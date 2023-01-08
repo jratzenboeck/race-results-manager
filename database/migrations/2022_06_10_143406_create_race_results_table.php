@@ -22,7 +22,7 @@ return new class () extends Migration {
             $table->integer('rank_total');
             $table->integer('rank_gender')->nullable();
             $table->integer('rank_age_group')->nullable();
-            $table->time('total_time');
+            $table->string('total_time', 8);
             $table->text('notes')->nullable();
             $table->morphs('raceable');
             $table->timestamps();
